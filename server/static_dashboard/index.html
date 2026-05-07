@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>중앙 서버 대시보드</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <h1>중앙 서버 모니터링 대시보드</h1>
+            <span class="subtitle">CCTV 기반 환경 적응형 오염 모니터링</span>
+        </div>
+        <nav class="nav">
+            <a href="#realtime" class="active">실시간 CCTV 상태</a>
+            <a href="#pollution">오염도 현황</a>
+            <a href="#th">온습도 정보</a>
+            <a href="#events">이벤트 기록</a>
+            <a href="#settings">설정</a>
+        </nav>
+    </header>
+
+    <main class="content">
+        <section id="realtime" class="panel">
+            <h2>실시간 CCTV 상태</h2>
+            <div class="cards">
+                <div class="card stat">
+                    <span class="label">연결된 장치</span>
+                    <span class="value" id="stat-online">3 / 5</span>
+                </div>
+                <div class="card stat">
+                    <span class="label">스트리밍 정상</span>
+                    <span class="value ok" id="stat-streaming">3</span>
+                </div>
+                <div class="card stat">
+                    <span class="label">오프라인</span>
+                    <span class="value warn" id="stat-offline">2</span>
+                </div>
+                <div class="card stat">
+                    <span class="label">서버 상태</span>
+                    <span class="value ok" id="stat-server">정상</span>
+                </div>
+            </div>
+
+            <h3>CCTV 목록</h3>
+            <table class="data-table" id="cctv-table">
+                <thead>
+                    <tr>
+                        <th>장치 ID</th>
+                        <th>위치</th>
+                        <th>상태</th>
+                        <th>FPS</th>
+                        <th>모델 버전</th>
+                        <th>최근 통신</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="pollution" class="panel">
+            <h2>오염도 현황</h2>
+            <h3>장치별 오염도 점수</h3>
+            <table class="data-table" id="pollution-table">
+                <thead>
+                    <tr>
+                        <th>장치 ID</th>
+                        <th>위치</th>
+                        <th>최근 점수</th>
+                        <th>등급</th>
+                        <th>측정 시각</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="th" class="panel">
+            <h2>온습도 정보</h2>
+            <table class="data-table" id="th-table">
+                <thead>
+                    <tr>
+                        <th>장치 ID</th>
+                        <th>온도</th>
+                        <th>습도</th>
+                        <th>측정 시각</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="events" class="panel">
+            <h2>이벤트 기록</h2>
+            <h3>최근 이벤트</h3>
+            <table class="data-table" id="events-table">
+                <thead>
+                    <tr>
+                        <th>시각</th>
+                        <th>장치</th>
+                        <th>유형</th>
+                        <th>내용</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="settings" class="panel">
+            <h2>설정</h2>
+            <div class="cards">
+                <div class="card info">
+                    <span class="label">서버 상태</span>
+                    <span class="value ok">정상</span>
+                </div>
+                <div class="card info">
+                    <span class="label">현재 모델 버전</span>
+                    <span class="value" id="setting-model-version">v0.1.0-dev</span>
+                </div>
+                <div class="card info">
+                    <span class="label">학습 파이프라인</span>
+                    <span class="value">대기 (placeholder)</span>
+                </div>
+                <div class="card info">
+                    <span class="label">규칙셋 배포</span>
+                    <span class="value">미배포 (placeholder)</span>
+                </div>
+            </div>
+            <p class="note">
+                ※ 본 화면은 정적 프로토타입입니다. 실제 백엔드 API 연결은 추후 단계에서 진행됩니다.
+            </p>
+        </section>
+    </main>
+
+    <footer class="bottombar">
+        <small>중앙 서버 운영자용 대시보드 - 라즈베리파이 로컬 디버그 UI 아님</small>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

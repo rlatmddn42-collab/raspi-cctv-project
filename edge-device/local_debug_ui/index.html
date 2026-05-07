@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>엣지 디바이스 로컬 디버그</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="topbar">
+        <h1>엣지 디바이스 로컬 디버그 UI</h1>
+        <span class="badge" id="device-id">device: raspi-edge-01</span>
+    </header>
+
+    <main class="grid">
+        <section class="card">
+            <h2>장치 상태</h2>
+            <ul class="kv">
+                <li><span>전원</span><b id="power-state">정상</b></li>
+                <li><span>업타임</span><b id="uptime">--</b></li>
+                <li><span>CPU 온도</span><b id="cpu-temp">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>서버 연결 상태</h2>
+            <ul class="kv">
+                <li><span>연결</span><b id="server-conn">대기 중</b></li>
+                <li><span>마지막 동기화</span><b id="last-sync">--</b></li>
+                <li><span>핑(ms)</span><b id="ping">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>CCTV 입력 상태</h2>
+            <ul class="kv">
+                <li><span>장치</span><b id="cctv-device">/dev/video0</b></li>
+                <li><span>해상도</span><b id="cctv-res">--</b></li>
+                <li><span>FPS</span><b id="cctv-fps">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card preview">
+            <h2>현재 프레임 미리보기</h2>
+            <div class="frame-placeholder" id="frame-preview">
+                <span>프레임 미리보기 영역 (placeholder)</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>OCR 상태</h2>
+            <ul class="kv">
+                <li><span>활성화</span><b id="ocr-enabled">미설정</b></li>
+                <li><span>마지막 인식</span><b id="ocr-last">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>OCR 좌표</h2>
+            <ul class="kv">
+                <li><span>온도 ROI</span><b id="ocr-temp-roi">미설정</b></li>
+                <li><span>습도 ROI</span><b id="ocr-humid-roi">미설정</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>최근 온도/습도 값</h2>
+            <ul class="kv">
+                <li><span>온도</span><b id="temp-val">-- ℃</b></li>
+                <li><span>습도</span><b id="humid-val">-- %</b></li>
+                <li><span>측정 시각</span><b id="th-time">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>모델 상태</h2>
+            <ul class="kv">
+                <li><span>로드됨</span><b id="model-loaded">아니요</b></li>
+                <li><span>런타임</span><b id="model-runtime">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>모델 버전</h2>
+            <ul class="kv">
+                <li><span>버전</span><b id="model-version">--</b></li>
+                <li><span>해시</span><b id="model-hash">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>추론 상태</h2>
+            <ul class="kv">
+                <li><span>현재 상태</span><b id="infer-state">대기</b></li>
+                <li><span>FPS</span><b id="infer-fps">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>최근 오염도 점수</h2>
+            <ul class="kv">
+                <li><span>점수</span><b id="pollution-score">--</b></li>
+                <li><span>측정 시각</span><b id="pollution-time">--</b></li>
+            </ul>
+        </section>
+
+        <section class="card logs">
+            <h2>최근 로그</h2>
+            <pre id="log-area">로그 대기 중...</pre>
+        </section>
+    </main>
+
+    <footer class="bottombar">
+        <small>로컬 디버그 전용 - 운영자용 메인 대시보드 아님</small>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
