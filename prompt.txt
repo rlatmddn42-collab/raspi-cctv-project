@@ -1,0 +1,179 @@
+You are acting as a software architect and AI system designer.
+
+Design the foundational architecture for the following capstone project.
+
+Project Title:
+Environment-Adaptive Pollution Monitoring and Visual Sensorization System Using Existing CCTV Infrastructure
+
+Target Edge Device:
+- Raspberry Pi 4 Model B
+- RAM: 4GB
+- OS: Raspberry Pi OS 64-bit Lite
+- No desktop GUI should be assumed
+- The system should run as a lightweight headless edge service
+
+Core Objective:
+Transform already-installed fixed CCTV cameras from simple recording devices into environment-aware monitoring systems capable of analyzing pollution states such as littering, cigarette butt accumulation, and environmental degradation.
+
+This is NOT simply “YOLO object detection on CCTV.”
+The core concept is:
+- reusing existing CCTV infrastructure
+- learning location-specific normal states
+- detecting persistent pollution-related changes
+- quantifying pollution levels over time
+- extracting local environmental data visually using OCR
+
+System Assumptions:
+- CCTV cameras are fixed-view cameras
+- CCTV video is accessed through RTSP or similar stream
+- Training is performed on a server
+- Inference is performed on Raspberry Pi 4B 4GB
+- Raspberry Pi uses Raspberry Pi OS 64-bit Lite
+- The edge device should be resource-conscious
+- The system should support future acceleration options such as Coral USB Accelerator
+
+Main System Flow:
+1. Existing CCTV provides video stream
+2. Server collects 1–2 months of location-specific video data
+3. Server trains or fine-tunes a location-specific model
+4. Optimized model is deployed to Raspberry Pi
+5. Raspberry Pi performs lightweight inference locally
+6. Detected pollution data is sent to the central server
+7. Dashboard visualizes pollution level, events, charts, and reports
+
+Core Features:
+
+A. Pollution Object Detection
+- Detect cigarette butts, litter, trash, and waste objects
+- Prefer lightweight models suitable for Raspberry Pi 4B
+- Consider YOLOv8n, YOLOv5n, MobileNet-SSD, TFLite models, or ONNX Runtime
+- SAHI may be considered only as an optional optimization for small objects, not a mandatory core feature
+
+B. Environmental State Change Analysis
+- Use fixed CCTV viewpoint
+- Learn normal background/environment state
+- Detect persistent state changes
+- Distinguish temporary objects from accumulated pollution
+- Use object count, density, duration, and temporal accumulation for pollution scoring
+
+C. OCR-Based Visual Sensorization
+- Place a low-cost digital thermometer/hygrometer inside CCTV view
+- Define fixed ROI coordinates
+- Apply OCR only to that ROI
+- Extract temperature and humidity values
+- No object detection is required for this feature because CCTV angle and sensor position are fixed
+- This provides low-cost local micro-environment data that weather APIs cannot provide accurately
+
+D. Pollution Score Calculation
+Use:
+- detected object count
+- object area or density
+- persistence duration
+- accumulation over time
+- OCR-extracted temperature/humidity data
+
+Output:
+A quantified pollution score for each monitored area.
+
+E. Central Server
+- Receive results from Raspberry Pi
+- Store data in database
+- Provide REST API and/or WebSocket
+- Manage events and notifications
+- Serve dashboard data
+
+F. User Dashboard
+- GIS map
+- CCTV-specific pollution status
+- time-series charts
+- event alerts
+- event images or snapshots
+- environmental reports
+
+Future Extensions:
+Keep these separate from MVP:
+- fire detection
+- smoke detection
+- hazard detection
+- additional OCR-based instrument reading
+- multi-CCTV integrated monitoring
+- Coral USB Accelerator support
+- Jetson device support
+
+Request:
+Please provide a practical system design optimized for Raspberry Pi 4B 4GB running Raspberry Pi OS 64-bit Lite.
+
+Include:
+
+1. Full layered architecture:
+   - Field Device Layer
+   - Edge AI Processing Layer
+   - Central Service Layer
+   - User Monitoring Layer
+   - Extension Layer
+
+2. Module breakdown per layer
+
+3. End-to-end data flow
+
+4. MVP scope vs future extension scope
+
+5. Recommended technology stack specifically considering Raspberry Pi 4B 4GB 64-bit Lite limitations
+
+6. Recommended lightweight inference approach:
+   - model format
+   - runtime
+   - input resolution
+   - expected FPS range
+   - optimization strategy
+
+7. OCR pipeline design for fixed ROI:
+   - ROI cropping
+   - preprocessing
+   - OCR engine recommendation
+   - error correction strategy
+
+8. Backend/frontend/AI/edge task separation
+
+9. Communication design between Raspberry Pi and server
+
+10. Database schema suggestions
+
+11. Deployment flow:
+   - training server
+   - model export
+   - model optimization
+   - Raspberry Pi deployment
+   - service execution with systemd
+
+12. Suggested folder structure
+
+13. Risks and limitations:
+   - Raspberry Pi performance limits
+   - small object detection difficulty
+   - lighting/weather influence
+   - OCR misreading
+   - camera angle changes
+   - model update process
+
+14. Recommended development roadmap:
+   - prototype
+   - MVP
+   - field test
+   - optimization
+   - final presentation/demo
+
+Additional Requirements:
+
+- Include a simple UI prototype.
+- All UI text must be written in Korean.
+- The UI should only provide the basic structure/layout.
+- Do not implement detailed features yet.
+- The UI should include placeholder sections for:
+  - 실시간 CCTV 상태
+  - 오염도 현황
+  - 온습도 정보
+  - 이벤트 기록
+  - 설정
+- Use Korean labels, buttons, headings, and messages.
+- Focus on layout and navigation only, not full functionality.
