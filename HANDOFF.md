@@ -40,9 +40,10 @@
 
 ## 2. Active Workstreams
 
-Currently there is **one active workstream** with two UI sub-deliverables and
-a documentation deliverable. Listed below as a single workstream because they
-share scope and constraints.
+Originally there was **one workstream** (UI role separation). As of
+2026-05-21 a second workstream has been added: a backend prototype that
+implements `COMMUNICATION_PROTOCOL.md` end-to-end. Both workstreams are
+listed below.
 
 ### Workstream: UI role separation + dual UI prototypes
 
@@ -114,6 +115,91 @@ share scope and constraints.
 
 ---
 
+### Workstream: Backend prototype (FastAPI server + edge sender)
+
+Added 2026-05-21, driven by `prompt.txt` ("start writing the file according to
+COMMUNICATION_PROTOCOL.md") and a follow-up smoke-test request.
+
+- **Purpose**
+  Provide a minimal but spec-conformant implementation of
+  `COMMUNICATION_PROTOCOL.md` v0.1 so the static dashboard and a real edge
+  client have a concrete target to talk to. **Not** a production backend.
+
+- **Current status**
+  Implementation is on disk, local smoke test passed end-to-end on
+  Windows + Python 3.14. **Nothing committed to git yet.**
+
+- **Already decided**
+  - Server framework: **FastAPI** (the spec explicitly mentions FastAPI/Flask).
+  - Storage: **in-memory only** for v0.1 (`server/api/storage.py`).
+    Resets on restart. Seeded with one dev device (`rpi-001` /
+    `dev-key-rpi-001` / `정문 CCTV`).
+  - Edge client uses `requests` synchronously; a single `EdgeClient` class
+    wraps heartbeat / detections / event / snapshot, and surfaces the
+    §5 error envelope as `ProtocolError(status, code, message)`.
+  - Auth via `X-Device-Api-Key` header, validated inside a FastAPI
+    `Depends(authed_device)` so it runs **before** Pydantic body validation —
+    see "Risks" below for the bug this fixed.
+  - CORS opened for all origins so the static dashboard (`:8000`) can call
+    the API (`:9000`) during dev.
+
+- **Already done**
+  - `server/api/{__init__.py, main.py, models.py, storage.py, auth.py,
+    requirements.txt, README.md}`.
+  - `edge-device/agent/{__init__.py, client.py, config.py, demo.py,
+    requirements.txt, README.md}`.
+  - `docs/BACKEND_PROTOTYPE.md` — full description of this workstream,
+    protocol mapping, run instructions, and smoke-test result.
+  - Local smoke test (2026-05-21): all four POST endpoints, all GET
+    endpoints, bad-key (`401 invalid_api_key`), unknown-device
+    (`404 device_not_found`), and a snapshot multipart upload round-trip
+    pass. Korean strings (`정문 CCTV`, `12가3456`) round-trip intact.
+
+- **Unfinished**
+  - **Git commit not yet made** for any of the new files.
+  - Static dashboard (`server/static_dashboard/script.js`) is **not yet
+    wired** to the API — it still renders hardcoded arrays.
+  - No persistence: every restart loses devices' last_seen, detections,
+    events, snapshots.
+  - No heartbeat daemon on the edge — `demo.py` only fires one message of
+    each type per invocation.
+  - No retry / offline queue on the edge client.
+  - No tests (only the manual smoke script).
+
+- **Important constraints (preserve)**
+  - This is a **prototype**, not a production backend. Per the original
+    `README.md` "현재 단계에서 구현하지 않는 것" section, no real AI/OCR/
+    training/model-distribution work should happen here.
+  - Server and edge code are independent halves of the same protocol; both
+    must continue to refer to `COMMUNICATION_PROTOCOL.md` as the source of
+    truth and update together if the spec changes.
+  - Time fields are ISO 8601 UTC strings everywhere (no datetime objects on
+    the wire).
+
+- **Risks / uncertain points**
+  - **Spec-conformance regression that was fixed and must not return:**
+    initially `main.py` took the request body as a function parameter, which
+    made Pydantic body validation fire before `require_api_key()`. Bad keys
+    returned `400 bad_request` instead of `401 invalid_api_key`. Fix was to
+    move auth into `Depends(authed_device)`. Any refactor of the route
+    signatures must keep auth in a dependency that runs *before* body
+    parsing.
+  - In-memory storage means a server restart silently wipes state — easy
+    to mistake for a bug while developing.
+  - The seeded API key (`dev-key-rpi-001`) is a placeholder; do not deploy.
+  - `edge-device/` folder name uses a hyphen, so `python -m
+    edge_device.agent.demo` does NOT work; `demo.py` patches `sys.path`
+    instead. Any future packaging effort needs to choose between renaming
+    the folder, adding a proper `pyproject.toml`, or living with the
+    `sys.path` hack.
+
+- **Recommended next step**
+  Either (a) wire `server/static_dashboard/script.js` to the live
+  `GET /api/devices` and `GET .../detections` endpoints, or (b) commit the
+  current prototype as a single coherent commit first, then proceed to (a).
+
+---
+
 ## 3. Existing Files and Artifacts
 
 Status legend: ✅ complete for current scope · 🟡 placeholder · ⚠ uncertain ·
@@ -147,6 +233,38 @@ Status legend: ✅ complete for current scope · 🟡 placeholder · ⚠ uncerta
 ### `docs/`
 - `UI_ROLE_SEPARATION.md` — Korean, defines edge vs. server responsibilities,
   comparison table, rationale, and what's intentionally out of scope. **✅**
+- `BACKEND_PROTOTYPE.md` — Korean, describes the FastAPI server + edge
+  sender prototype, protocol mapping table, run instructions, and the
+  2026-05-21 smoke-test result. **✅** (added 2026-05-21)
+
+### `server/api/` (added 2026-05-21)
+- `main.py` — FastAPI app. Routes for heartbeat/detections/events/snapshots
+  + GET endpoints for the dashboard. `authed_device` is a `Depends(...)`
+  so auth runs **before** body validation (do not refactor that away —
+  see §2 "Risks" for the bug it fixes). Global error handler enforces the
+  §5 envelope. CORS open. **✅**
+- `models.py` — Pydantic models for the §4 payloads. `DetectedObject.class_`
+  is aliased to `class` because `class` is a Python keyword; `model_dump(
+  by_alias=True)` is used when storing so the wire format is preserved. **✅**
+- `storage.py` — in-memory dicts. Seeded with `rpi-001` / `dev-key-rpi-001`
+  / `정문 CCTV`. **🟡 (resets on restart)**
+- `auth.py` — checks device exists then compares the key. Raises
+  `404 device_not_found` or `401 invalid_api_key`. **✅**
+- `requirements.txt` — fastapi, uvicorn[standard], python-multipart. **✅**
+- `README.md` — Korean run/curl guide. **✅**
+
+### `edge-device/agent/` (added 2026-05-21)
+- `client.py` — `EdgeClient` wrapping the four POST endpoints. Returns the
+  parsed response dict, or raises `ProtocolError(status, code, message)`
+  when the server returns the §5 error envelope. **✅**
+- `config.py` — env-driven config (`CCTV_SERVER_URL`, `CCTV_DEVICE_ID`,
+  `CCTV_API_KEY`, `CCTV_HEARTBEAT_SEC`). Defaults match the seeded server
+  device. **✅**
+- `demo.py` — fires one heartbeat + one detection + one event. Patches
+  `sys.path` so the hyphenated `edge-device/` folder can still expose
+  `agent` as an importable package. **✅**
+- `requirements.txt` — requests. **✅**
+- `README.md` — Korean run/usage guide. **✅**
 
 ### `ui-prototype/` (deleted)
 - Old generic prototype that was the "Current Problem" identified by
@@ -322,23 +440,44 @@ Two separate UIs, never merged:
     실시간 CCTV 상태, 오염도 현황, 온습도 정보, 이벤트 기록, 설정.
 Both are static HTML/CSS/JS with placeholder data; no framework, no backend.
 
+Backend prototype (added 2026-05-21, also uncommitted):
+  - server/api/                 : FastAPI server implementing
+    COMMUNICATION_PROTOCOL.md v0.1. In-memory storage. Seeded device
+    rpi-001 / dev-key-rpi-001 / "정문 CCTV". Auth via Depends(authed_device)
+    that MUST run before body validation (do not collapse back into a route
+    parameter — that re-introduces the 400-instead-of-401 bug that was
+    fixed on 2026-05-21).
+  - edge-device/agent/          : `requests`-based EdgeClient with
+    heartbeat/detections/event/snapshot wrappers; ProtocolError surfaces
+    the §5 error envelope. demo.py is a one-shot smoke test.
+  Local smoke test on 2026-05-21 passed end-to-end (all POST/GET, bad-key
+  → 401, unknown device → 404, snapshot multipart upload, Korean strings
+  round-trip).
+
 Docs:
   - docs/UI_ROLE_SEPARATION.md  : edge vs. server responsibilities, rationale.
+  - docs/BACKEND_PROTOTYPE.md   : FastAPI server + edge sender prototype,
+                                  protocol mapping, run steps, smoke result.
+  - COMMUNICATION_PROTOCOL.md   : v0.1 DRAFT — source of truth for the wire
+                                  format. Server and edge must update with it.
   - README.md                   : top-level overview and run instructions.
   - HANDOFF.md                  : full handoff (this is its summary block).
 
 Out of scope right now (do NOT implement yet): full AI inference system,
-backend API, YOLO training, real OCR, model distribution endpoint, maps,
-multi-CCTV management on the edge UI.
+YOLO training, real OCR, model distribution endpoint, maps, multi-CCTV
+management on the edge UI. The backend prototype is explicitly a stub —
+no persistence, no real auth, no production hardening.
 
 Repo state at handoff: only commit is fc169ed "initial commit"; the new
-layout above is uncommitted in the working tree. Old ui-prototype/,
-ARCHITECTURE.md, and prompt.txt are deleted from the working tree but still
-present in HEAD.
+layout above AND the backend prototype are uncommitted in the working tree.
+Old ui-prototype/, ARCHITECTURE.md, and an earlier prompt.txt are deleted
+from the working tree but still present in HEAD.
 
-Immediate next step: commit the new layout, then validate both index.html
-files render correctly. After that, begin replacing edge placeholders with
-real device data feeds before touching the server backend.
+Immediate next step options:
+  (a) commit the current working tree as one or two coherent commits
+      (UI restructure + backend prototype), then
+  (b) wire server/static_dashboard/script.js to GET /api/devices and
+      GET /api/devices/{id}/detections instead of its hardcoded arrays.
 
 Hard constraints: Korean UI text, no framework on the edge UI, edge UI must
 not become a dashboard, do not start backend/AI/OCR work until the structural
