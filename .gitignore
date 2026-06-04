@@ -39,6 +39,13 @@ out/
 *.bak
 logs/
 
+# Runtime database (SQLite, server/api 영속 저장소 - v0.3)
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+
 # Models / training artifacts (엣지 추론 모델, 학습 산출물)
 *.pt
 *.onnx

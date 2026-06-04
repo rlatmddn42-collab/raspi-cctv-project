@@ -1,15 +1,15 @@
 # Backend Prototype
 
 > Status: **DRAFT prototype**
-> 최초 작성일: 2026-05-21 · 갱신: 2026-06-04 (프로젝트 v0.2)
+> 최초 작성일: 2026-05-21 · 갱신: 2026-06-04 (프로젝트 v0.3)
 > 근거 문서: `COMMUNICATION_PROTOCOL.md` **v0.1 DRAFT** (변경 없음)
 
 > **버전 구분**
 > - 프로젝트(체크포인트) **v0.1**: 인메모리 더미 백엔드 + 정적 UI 프로토타입.
 > - 프로젝트(체크포인트) **v0.2**: 정적 대시보드 ↔ FastAPI 라이브 연동(§5.1).
+> - 프로젝트(체크포인트) **v0.3**: SQLite 영속 저장소(§5.2). 재시작 후 데이터 유지.
 > - 엣지↔서버 **통신 규약**: 여전히 **v0.1 DRAFT**. 오염도 점수·환경 온습도용
 >   프로토콜은 아직 정의되지 않았습니다(= "프로토콜 v0.2" 는 미구현).
-> - 저장소: 여전히 **인메모리** (서버 재시작 시 데이터 초기화).
 
 본 문서는 라즈베리파이 엣지 디바이스와 중앙 서버 간 통신 규약(`COMMUNICATION_PROTOCOL.md`)
 을 실제로 동작하는 최소 구현으로 옮긴 **백엔드 프로토타입**을 설명합니다.
@@ -20,8 +20,9 @@
 - 정적 대시보드(`server/static_dashboard/`)가 장차 붙을 수 있는 동일 origin 의 더미 API 제공
 - 엣지 측 송신 코드를 위한 참고 구현 제공
 
-> 본 단계에서는 **AI 추론, OCR, 모델 학습/배포, 영속 저장소, 실서비스용 보안**
-> 은 다루지 않습니다. README.md §"현재 단계에서 구현하지 않는 것" 항목을 그대로 유지합니다.
+> 본 단계에서는 **AI 추론, OCR, 모델 학습/배포, 실서비스용 보안** 은 다루지
+> 않습니다. (영속 저장소는 v0.3 에서 SQLite 로 도입되었습니다 — §5.2.)
+> README.md §"현재 단계에서 구현하지 않는 것" 항목을 그대로 유지합니다.
 
 ---
 
@@ -29,7 +30,7 @@
 
 | 위치 | 역할 |
 | --- | --- |
-| `server/api/` | FastAPI 기반 중앙 서버 (인메모리 저장소) |
+| `server/api/` | FastAPI 기반 중앙 서버 (SQLite 영속 저장소, v0.3~) |
 | `edge-device/agent/` | 엣지 디바이스용 송신 클라이언트 (`requests`) |
 
 ### 1.1 서버 (`server/api/`)
@@ -38,12 +39,13 @@
 | --- | --- |
 | `main.py` | FastAPI 앱, 라우트, 에러 래퍼, CORS |
 | `models.py` | 프로토콜 §4 의 Pydantic 모델 |
-| `storage.py` | 인메모리 저장소 + 디바이스 레지스트리 |
+| `storage.py` | SQLite 영속 저장소 + 디바이스 레지스트리 (stdlib `sqlite3`) |
 | `auth.py` | `X-Device-Api-Key` 검증 |
 | `requirements.txt` | 의존성 (fastapi, uvicorn, python-multipart) |
 | `README.md` | 실행/점검 가이드 |
 
-시드 디바이스 1대가 사전 등록되어 있습니다:
+시드 디바이스 1대가 **DB 가 비어 있을 때만** 등록됩니다 (기존 데이터는
+재시작 시 덮어쓰지 않음):
 
 | device_id | api_key | location |
 | --- | --- | --- |
@@ -143,7 +145,6 @@ Windows + Python 3.14 환경에서 다음 호출을 모두 검증했습니다.
 
 ## 5. 현재 다루지 않는 것
 
-- 영속 저장소 (재시작 시 데이터 초기화)
 - 디바이스 자동 등록(provisioning) 흐름
 - 압축 전송 / 배치 업로드 최적화 / NTP
 - WebSocket / MQTT
@@ -177,9 +178,58 @@ Windows + Python 3.14 환경에서 다음 호출을 모두 검증했습니다.
 
 ---
 
+## 5.2 SQLite 영속 저장소 (2026-06-04, 프로젝트 v0.3)
+
+`server/api/storage.py` 의 인메모리 dict 를 stdlib `sqlite3` 기반 저장소로
+교체했습니다. **공개 함수 시그니처는 그대로**라서 `main.py`·통신 규약·엣지
+에이전트는 변경 없이 동작합니다 (ORM 미사용).
+
+**DB 위치**
+
+- 기본: `<repo>/data/cctv.db` (`data/` 는 git 무시).
+- `CCTV_DB_PATH` 환경변수로 변경 가능.
+- 모듈 import 시 테이블 생성 + 시드를 수행하므로 `main.py` 에 별도 startup
+  훅이 필요 없습니다. `journal_mode=WAL` 사용.
+
+**스키마**
+
+| 테이블 | 핵심 컬럼 | 비고 |
+| --- | --- | --- |
+| `devices` | `device_id` (PK), `api_key`, `location` | 디바이스 레지스트리 |
+| `device_state` | `device_id` (PK), `last_seen`, `status`, `heartbeat_json` | 최신 heartbeat 1건 |
+| `detections` | `id` (PK), `device_id`, `timestamp`, `payload_json` | `(device_id, timestamp)` 인덱스 |
+| `events` | `id` (PK), `device_id`, `timestamp`, `payload_json` | `(device_id, timestamp)` 인덱스 |
+| `snapshots` | `snapshot_id` (PK), `device_id`, `content_type`, `metadata_json`, `data` BLOB | 이미지 바이트 |
+
+- detections/events 는 검색용 `device_id`·`timestamp` 컬럼 + 전체 페이로드
+  JSON blob 으로 저장 → `class` 별칭과 한글 텍스트를 그대로 보존.
+- 조회 의미는 기존과 동일: ISO 8601 문자열 사전식 범위 필터, `timestamp`
+  가 NULL 이면 항상 포함, 최신 `limit` 건을 삽입순 오름차순(= `list[-limit:]`)
+  으로 반환.
+- 시드(`rpi-001`)는 **`devices` 가 비어 있을 때만** 1회 등록 → 재시작 시
+  기존 데이터 보존, 시드 중복/덮어쓰기 없음.
+
+**검증 (2026-06-04)**
+
+| 점검 | 결과 |
+| --- | --- |
+| 빈 DB 로 서버 기동 + 시드 1대 등록 | ✅ |
+| `demo.py` heartbeat/detections/event + 스냅샷 업로드 | ✅ |
+| 대시보드 GET 엔드포인트 라이브 응답 | ✅ |
+| **서버 재시작 후 데이터 유지** (장치 상태/탐지/이벤트) | ✅ |
+| 기존 데이터에 시드 미중복 (rpi-002 추가 후 reopen) | ✅ |
+| `class` 별칭 + 한글 OCR(`12가3456`) + 스냅샷 BLOB 라운드트립 | ✅ |
+| DB 파일 git 무시 (`data/`, `*.db*`) | ✅ |
+
+> 한계: 보존 기간(retention) 정책 없음(무한 증가), 단일 프로세스 가정
+> (다중 워커 시 WAL 권장), 시드 API 키는 여전히 개발용 placeholder.
+
+---
+
 ## 6. 다음 단계 후보
 
-- `edge-device/agent/` 에 heartbeat 데몬 추가 (systemd 또는 단순 루프).
-- 인메모리 저장소를 SQLite 로 교체.
+- 대시보드 자동 새로고침(폴링) — 이제 영속 데이터를 기반으로 동작.
+- `edge-device/agent/` 에 heartbeat 데몬 추가 (systemd 또는 단순 루프) +
+  재전송/오프라인 큐.
 - 오염도 점수 / 환경 온습도 필드를 프로토콜 v0.2 에 정의 후 대시보드 연동.
-- API 키 발급/회전 절차 문서화.
+- 보존 기간/롤오프 정책, API 키 발급/회전 절차 문서화.
