@@ -1,8 +1,15 @@
-# Backend Prototype (v0.1)
+# Backend Prototype
 
 > Status: **DRAFT prototype**
-> 작성일: 2026-05-21
-> 근거 문서: `COMMUNICATION_PROTOCOL.md` v0.1
+> 최초 작성일: 2026-05-21 · 갱신: 2026-06-04 (프로젝트 v0.2)
+> 근거 문서: `COMMUNICATION_PROTOCOL.md` **v0.1 DRAFT** (변경 없음)
+
+> **버전 구분**
+> - 프로젝트(체크포인트) **v0.1**: 인메모리 더미 백엔드 + 정적 UI 프로토타입.
+> - 프로젝트(체크포인트) **v0.2**: 정적 대시보드 ↔ FastAPI 라이브 연동(§5.1).
+> - 엣지↔서버 **통신 규약**: 여전히 **v0.1 DRAFT**. 오염도 점수·환경 온습도용
+>   프로토콜은 아직 정의되지 않았습니다(= "프로토콜 v0.2" 는 미구현).
+> - 저장소: 여전히 **인메모리** (서버 재시작 시 데이터 초기화).
 
 본 문서는 라즈베리파이 엣지 디바이스와 중앙 서버 간 통신 규약(`COMMUNICATION_PROTOCOL.md`)
 을 실제로 동작하는 최소 구현으로 옮긴 **백엔드 프로토타입**을 설명합니다.
@@ -145,14 +152,34 @@ Windows + Python 3.14 환경에서 다음 호출을 모두 검증했습니다.
 - heartbeat 백그라운드 데몬 (systemd 서비스)
 - 재전송 / 오프라인 큐
 - mTLS / 인증서 회전
-- 정적 대시보드의 실제 API 연동 (현재까지는 하드코딩된 더미 데이터를 그대로 사용)
+- 오염도 점수 / 환경 온습도 의 프로토콜 정의 (현재 v0.1 미정의)
+
+---
+
+## 5.1 정적 대시보드 라이브 연동 (2026-06-04)
+
+`server/static_dashboard/` 가 더 이상 하드코딩 데이터를 쓰지 않고 위 GET
+엔드포인트를 직접 호출합니다.
+
+| 섹션 | 출처 | 상태 |
+| --- | --- | --- |
+| 실시간 CCTV 상태 (목록 + 통계 카드) | `GET /api/devices` | 라이브 |
+| 이벤트 기록 | 장치별 `GET /api/devices/{id}/events` 병합·정렬 | 라이브 |
+| 오염도 / 온습도 | (프로토콜 미정의) | 미연동 — "미연동" 으로 명시 표기 |
+
+- CCTV 목록의 **FPS / 모델 버전** 컬럼을 채우기 위해 `storage.list_devices()`
+  에 `fps` / `model_version` 을 **추가(additive)** 했습니다. 최신 heartbeat
+  에서 끌어오며, heartbeat 가 없으면 `null`. 기존 §4.5 응답 형태는 보존됩니다.
+- API 주소는 `index.html` 의 `window.API_BASE` 로 설정합니다 (기본
+  `http://localhost:9000`). CORS 는 이미 전체 허용 상태입니다.
+- 서버가 꺼져 있으면 가짜 데이터를 보이지 않고 우상단 배너와 표에
+  오류 상태를 표시합니다.
 
 ---
 
 ## 6. 다음 단계 후보
 
-- `server/static_dashboard/script.js` 가 `/api/devices` 와
-  `/api/devices/{id}/detections` 를 폴링하도록 전환.
 - `edge-device/agent/` 에 heartbeat 데몬 추가 (systemd 또는 단순 루프).
 - 인메모리 저장소를 SQLite 로 교체.
+- 오염도 점수 / 환경 온습도 필드를 프로토콜 v0.2 에 정의 후 대시보드 연동.
 - API 키 발급/회전 절차 문서화.

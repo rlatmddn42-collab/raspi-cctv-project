@@ -95,6 +95,9 @@ class DeviceListItem(BaseModel):
     last_seen: Optional[str] = None
     status: Optional[str] = None
     location: Optional[str] = None
+    # Surfaced from the latest heartbeat; null until one arrives.
+    fps: Optional[float] = None
+    model_version: Optional[str] = None
 
 
 class DeviceListResponse(BaseModel):

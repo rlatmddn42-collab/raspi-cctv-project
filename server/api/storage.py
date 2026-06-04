@@ -44,11 +44,17 @@ def list_devices() -> List[dict]:
     out = []
     for device_id, info in _devices.items():
         state = _device_state.get(device_id, {})
+        hb = state.get("heartbeat") or {}
         out.append({
             "device_id": device_id,
             "last_seen": state.get("last_seen"),
             "status": state.get("status"),
             "location": info.get("location"),
+            # Additive fields surfaced from the latest heartbeat (null until one
+            # arrives). Existing consumers can ignore them; the protocol §4.5
+            # shape is preserved.
+            "fps": (hb.get("camera") or {}).get("fps"),
+            "model_version": (hb.get("inference") or {}).get("model_version"),
         })
     return out
 

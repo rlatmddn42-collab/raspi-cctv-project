@@ -145,6 +145,39 @@ html, body {
 .badge.ok { background: #e3f5ec; color: #1f8a4c; }
 .badge.warn { background: #fdf1dd; color: #c87a00; }
 .badge.bad { background: #fbe5e1; color: #c0392b; }
+.badge.unbacked { background: #e7ebf2; color: #6b7a90; }
+
+/* API connection status banner (in the dark topbar) */
+.api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #c8d4e6;
+}
+
+.api-status .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #6b7a90; /* unknown / checking */
+    flex: 0 0 auto;
+}
+
+.api-status.online .dot { background: #2ecc71; }
+.api-status.online { color: #d7f6e3; }
+.api-status.offline .dot { background: #e74c3c; }
+.api-status.offline { color: #f6d7d2; }
+
+/* Muted rows for empty / unavailable / not-yet-backed table bodies */
+.data-table td.muted {
+    color: #93a1b5;
+    font-style: italic;
+}
+
+.data-table td.error {
+    color: #c0392b;
+}
 
 .note {
     margin-top: 14px;

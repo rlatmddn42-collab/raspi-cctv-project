@@ -31,20 +31,46 @@
 
 ## 실행 방법
 
-이 UI는 정적 HTML/CSS/JS 입니다. 별도의 빌드/서버가 필요 없습니다.
+이 UI는 정적 HTML/CSS/JS 입니다. 별도의 빌드 단계가 필요 없습니다.
 
-옵션 1: 파일을 직접 브라우저로 열기
-- `index.html` 더블 클릭
+1. 백엔드 API 를 먼저 실행합니다 (레포 루트에서):
+   ```
+   uvicorn server.api.main:app --reload --port 9000
+   ```
+2. 대시보드를 정적 서버로 띄웁니다:
+   ```
+   cd server/static_dashboard
+   python3 -m http.server 8000
+   ```
+3. 브라우저에서 `http://localhost:8000` 접속.
 
-옵션 2: 간단한 정적 서버
-```
-cd server/static_dashboard
-python3 -m http.server 8000
-```
-그 후 브라우저에서 `http://localhost:8000` 접속.
+`file://` 로 직접 열어도 화면은 보이지만, 브라우저 CORS 정책상 API
+호출이 막힐 수 있으므로 정적 서버 사용을 권장합니다.
 
-## 현재 상태
+### API 주소 변경
 
-- 백엔드 API 연동 없음
-- 정적 placeholder 데이터만 표시
-- 실제 학습 파이프라인 / 추론 결과 수집 / 모델 배포 연동은 추후 단계에서 구현
+기본 API 주소는 `http://localhost:9000` 입니다. 다른 호스트로 바꾸려면
+`index.html` 의 `window.API_BASE` 값을 수정하면 됩니다.
+
+## 현재 상태 (라이브 연동, 프로젝트 v0.2)
+
+> 프로젝트 **v0.2** 마일스톤: 정적 대시보드가 FastAPI 백엔드와 라이브 연동됩니다.
+> (v0.1 은 정적 placeholder 데이터만 표시했습니다.)
+> 단, 엣지↔서버 **통신 규약은 여전히 v0.1 DRAFT** 이며, 오염도·온습도는
+> 프로토콜에 정의되지 않아 미연동 상태입니다.
+
+`script.js` 가 `COMMUNICATION_PROTOCOL.md` v0.1 의 GET 엔드포인트를 호출합니다.
+
+| 섹션 | 데이터 출처 | 상태 |
+| --- | --- | --- |
+| 실시간 CCTV 상태 (목록 + 통계 카드) | `GET /api/devices` | ✅ 라이브 |
+| 이벤트 기록 | 장치별 `GET /api/devices/{id}/events` 병합 | ✅ 라이브 |
+| 설정 (모델 버전) | heartbeat 의 `inference.model_version` | ✅ 라이브 |
+| 오염도 현황 | (프로토콜 미정의) | ⛔ 미연동 |
+| 온습도 정보 | (프로토콜 미정의) | ⛔ 미연동 |
+
+- 우상단 배너로 API 연결 상태(연결됨/오프라인)를 표시합니다.
+- 서버가 꺼져 있으면 가짜 데이터를 보이지 않고 오류 메시지를 표시합니다.
+- 오염도/온습도는 프로토콜이 확장되기 전까지 "미연동" 으로 명확히 표기합니다.
+- FPS / 모델 버전은 heartbeat 가 한 번 도착해야 채워집니다
+  (그 전에는 `—`). `edge-device/agent/demo.py` 로 데이터를 넣어볼 수 있습니다.
