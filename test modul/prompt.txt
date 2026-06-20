@@ -1,0 +1,244 @@
+Update and push the entire Git repository located at:
+
+C:\Users\A\Documents\raspi-cctv-project
+
+Important clarification:
+
+* `test modul` is a subfolder of `raspi-cctv-project`.
+* The commit scope is the entire `raspi-cctv-project` repository.
+* Do not limit the commit to candidate-dataset-builder or to selected files only.
+* All current intended changes anywhere under the repository must be included in the commit.
+
+Do not make additional feature changes.
+
+============================================================
+
+1. Inspect the Entire Repository
+   ============================================================
+
+From:
+
+C:\Users\A\Documents\raspi-cctv-project
+
+Run and inspect:
+
+git status --short
+git diff
+git diff --stat
+git branch --show-current
+git remote -v
+git log -5 --oneline
+
+Inspect all:
+
+* modified files
+* added files
+* deleted files
+* renamed files
+* untracked files
+
+The repository root is the commit boundary.
+
+The following are all part of the same repository:
+
+* test modul/
+* server/
+* edge-device/
+* dashboard-related folders
+* docs/
+* root README.md
+* all other repository subfolders
+
+============================================================
+2. Commit Scope
+===============
+
+Commit all current intended repository changes under:
+
+C:\Users\A\Documents\raspi-cctv-project
+
+This includes the completed work in:
+
+* test modul/normal-background-prototype/
+* test modul/persistent-change-prototype/
+* test modul/candidate-dataset-builder/
+* root README.md
+* module README files
+* tests
+* source code
+* configuration examples
+* documentation
+* generated project files that are intentionally part of the current repository state
+
+Do not selectively stage only the latest module.
+
+Use the complete current working-tree state as the basis for the commit.
+
+============================================================
+3. Untracked and Generated Files
+================================
+
+Review all untracked files before staging.
+
+Because the goal is to synchronize the entire repository, include files under the repository unless:
+
+* they are already excluded by .gitignore
+* they are temporary Python cache files
+* they contain secrets or machine-specific credentials
+* they are clearly accidental operating-system or editor files
+
+Typical files that should remain excluded:
+
+* **pycache**/
+* *.pyc
+* local virtual environments
+* secret environment files
+* credentials
+* machine-local temporary files
+
+Do not automatically exclude `test modul` outputs merely because they are generated.
+
+If generated images, videos, manifests, HTML files, JSON files, or NPZ files currently exist inside the repository and are not ignored, include them as part of the full repository snapshot unless they are unreasonably large or contain sensitive information.
+
+If Git rejects files because of repository hosting size limits, report the exact files and sizes instead of silently excluding them.
+
+============================================================
+4. Local Configuration Safety Check
+===================================
+
+Before staging, inspect files such as:
+
+* .claude/settings.local.json
+* .env
+* credentials files
+* API-key files
+* local absolute-path configuration
+
+If any file contains secrets, tokens, credentials, or clearly machine-private information:
+
+* do not commit it
+* report it explicitly
+* add only an appropriate narrow .gitignore rule if necessary
+
+Do not exclude ordinary project configuration merely because it is local-looking unless it contains private or machine-specific data.
+
+============================================================
+5. Validate the Current Project
+===============================
+
+At minimum validate the latest candidate-dataset-builder work:
+
+cd "C:\Users\A\Documents\raspi-cctv-project\test modul\candidate-dataset-builder"
+
+python -m py_compile candidate_dataset_builder.py
+python -m unittest discover -s tests
+python candidate_dataset_builder.py --help
+
+Confirm:
+
+* compilation succeeds
+* all 36 tests pass
+* the newly added CLI options appear
+
+Also inspect whether the other prototype modules contain their own tests or documented validation commands.
+
+Do not modify code merely to make unrelated old tests pass.
+
+Return to the repository root afterward.
+
+============================================================
+6. Stage the Entire Repository
+==============================
+
+From the repository root, stage the complete intended state:
+
+git add -A
+
+Then inspect:
+
+git status --short
+git diff --cached
+git diff --cached --stat
+
+Confirm that:
+
+* changes from all repository subfolders are included
+* `test modul` changes are included
+* intended deletions are included
+* new files are included
+* no secret or accidental temporary files are staged
+
+Do not restrict staging to a manually selected subset unless a file is unsafe to commit.
+
+============================================================
+7. Commit
+=========
+
+Create one commit representing the complete repository update.
+
+Use an accurate commit message such as:
+
+feat: update CCTV prototype pipeline and dataset tooling
+
+A more accurate message may be chosen after reviewing the full staged diff.
+
+Do not amend an existing commit.
+
+============================================================
+8. Push
+=======
+
+Push the commit to the current branch and its configured upstream.
+
+Use a normal push.
+
+Do not:
+
+* force-push
+* change branches
+* rewrite history
+* delete remotes
+* create unrelated branches
+
+If the current branch has no upstream, configure it using the existing intended remote and push.
+
+============================================================
+9. Final Verification
+=====================
+
+After pushing, run:
+
+git status
+git log -1 --oneline
+git branch --show-current
+
+Confirm that the push completed successfully.
+
+The ideal final working-tree state is clean.
+
+If ignored runtime files remain, report them separately.
+
+If any files were intentionally excluded for security, size, or temporary-file reasons, list them explicitly.
+
+============================================================
+10. Completion Report
+=====================
+
+Report:
+
+1. Current branch
+2. Remote and upstream branch
+3. Commit hash
+4. Commit message
+5. Full staged-file summary
+6. Major repository areas included
+7. Confirmation that `test modul` was included
+8. New files included
+9. Deleted files included
+10. Files excluded and exact reasons
+11. Validation results
+12. Push result
+13. Final Git status
+14. Whether the working tree is clean
+
+Do not claim completion unless the remote push succeeds.

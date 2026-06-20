@@ -1,0 +1,21 @@
+{
+  "source_video": "E05_001.mp4",
+  "source_video_path": "input/E05_001.mp4",
+  "source_fps": 30.0,
+  "source_frame_count": 1818,
+  "source_width": 1920,
+  "source_height": 1080,
+  "source_duration_seconds": 60.6,
+  "sampling_interval_seconds": 2.0,
+  "maximum_sampled_frames": 300,
+  "sampled_frame_count": 31,
+  "processing_width": 1920,
+  "processing_height": 1080,
+  "gaussian_blur_enabled": false,
+  "gaussian_blur_kernel": 5,
+  "brightness_normalization_enabled": false,
+  "jpeg_quality": 95,
+  "estimated_memory_megabytes": 183.9,
+  "output_image": "reference_background.jpg",
+  "generated_at": "2026-06-20T05:06:58.629659+00:00"
+}

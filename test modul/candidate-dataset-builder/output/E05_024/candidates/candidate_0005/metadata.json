@@ -1,0 +1,127 @@
+{
+  "candidate_id": 46,
+  "source_video": "C:\\Users\\A\\Documents\\raspi-cctv-project\\test modul\\normal-background-prototype\\input\\E05_024.mp4",
+  "source_video_filename": "E05_024.mp4",
+  "events_json_path": "C:\\Users\\A\\Documents\\raspi-cctv-project\\test modul\\persistent-change-prototype\\output\\persistent_change_events.json",
+  "reference_path": "C:\\Users\\A\\Documents\\raspi-cctv-project\\test modul\\normal-background-prototype\\output\\reference_background.jpg",
+  "event_state": "cooldown_wait",
+  "selected_by_filter": true,
+  "first_seen_seconds": 0.67,
+  "persistent_time_seconds": 39.71,
+  "persistent_time_fallback": null,
+  "last_seen_seconds": 55.39,
+  "last_seen_fallback": null,
+  "stationary_duration_seconds": 22.02,
+  "occlusion_count": 3,
+  "total_occluded_duration_seconds": 4.34,
+  "resumed_after_occlusion_count": 48,
+  "bbox_event_coordinates": [
+    539,
+    73,
+    29,
+    56
+  ],
+  "bbox_source_coordinates": [
+    1078,
+    146,
+    58,
+    112
+  ],
+  "event_coordinate_resolution": {
+    "width": 960,
+    "height": 540
+  },
+  "source_video_resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "bbox_scale_x": 2.0,
+  "bbox_scale_y": 2.0,
+  "context_bbox_source_coordinates": [
+    865,
+    66,
+    484,
+    272
+  ],
+  "crop_bbox_source_coordinates": [
+    1066,
+    134,
+    82,
+    136
+  ],
+  "requested_frame_times": {
+    "before": 0.0,
+    "first_seen": 0.67,
+    "persistent": 39.71,
+    "last_seen": 55.39
+  },
+  "actual_frame_times": {
+    "before": 0.0,
+    "first_seen": 0.6673,
+    "persistent": 39.7063,
+    "last_seen": 55.3887
+  },
+  "extracted_frame_indices": {
+    "before": 0,
+    "first_seen": 20,
+    "persistent": 1190,
+    "last_seen": 1660
+  },
+  "clip_start_seconds": 36.71,
+  "clip_end_seconds": 44.71,
+  "extraction_warnings": [],
+  "label": "unreviewed",
+  "reviewer_notes": "",
+  "label_schema_version": "2.0",
+  "semantic_label": "unreviewed",
+  "raw_review_label": "unreviewed",
+  "normalized_semantic_label": "unreviewed",
+  "sample_quality": "unreviewed",
+  "reviewer_confidence": "unset",
+  "camera_id": "E05",
+  "camera_id_source": "explicit",
+  "scene_id": "E05_view",
+  "capture_condition": "unknown",
+  "source_video_id": "E05_024.mp4",
+  "candidate_time_group": "E05_024.mp4_3",
+  "group_key": "E05/E05_024.mp4",
+  "generated_negative": false,
+  "mask_source": "detector_mask_crop",
+  "model_source_crop": [
+    1027,
+    122,
+    160,
+    160
+  ],
+  "model_input_size": 128,
+  "alignment_valid": true,
+  "alignment_warnings": [],
+  "original_event": {
+    "region_id": 46,
+    "first_seen_seconds": 0.67,
+    "became_stationary_seconds": 1.33,
+    "became_persistent_seconds": 39.71,
+    "last_seen_seconds": 55.39,
+    "visible_duration_seconds": 36.04,
+    "stationary_duration_seconds": 22.02,
+    "state": "cooldown_wait",
+    "occlusion_count": 3,
+    "total_occluded_duration_seconds": 4.34,
+    "last_occlusion_start_seconds": 58.73,
+    "resumed_after_occlusion_count": 48,
+    "stationary_duration_before_occlusion_seconds": 22.02,
+    "expired_reason": null,
+    "maximum_area_pixels": 5372,
+    "minimum_area_pixels": 286,
+    "maximum_area_ratio": 0.010363,
+    "average_center_movement_pixels": 4.59,
+    "maximum_center_movement_pixels": 33.84,
+    "stable_match_ratio": 0.84,
+    "last_bbox": {
+      "x": 539,
+      "y": 73,
+      "width": 29,
+      "height": 56
+    }
+  }
+}

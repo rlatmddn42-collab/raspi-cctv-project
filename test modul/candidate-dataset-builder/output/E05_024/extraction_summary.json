@@ -1,0 +1,40 @@
+{
+  "total_events_found": 16,
+  "total_candidates_selected": 16,
+  "total_candidates_extracted": 16,
+  "total_background_negatives_generated": 0,
+  "total_candidates_skipped": 0,
+  "skipped_reasons": {},
+  "extraction_errors": [],
+  "missing_field_warnings": [],
+  "usable_for_training_before_review": 0,
+  "label_schema_version": "2.0",
+  "mask_source_video": "../persistent-change-prototype/output/temporal_filtered_mask.mp4",
+  "model_input_size": 128,
+  "context_model_input_size": 256,
+  "difference_mode": "abs_rgb",
+  "scene_metadata": {
+    "camera_id": "E05",
+    "camera_id_source": "explicit",
+    "scene_id": "E05_view",
+    "capture_condition": "unknown",
+    "source_video_id": "E05_024.mp4",
+    "group_key": "E05/E05_024.mp4",
+    "generated_negative": false
+  },
+  "video_fps": 29.97002997002997,
+  "video_fps_fallback": false,
+  "video_duration_seconds": 60.82743333333333,
+  "source_resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "event_resolution": {
+    "width": 960,
+    "height": 540,
+    "source": "processing_resolution"
+  },
+  "extraction_start_time": "2026-06-20T08:40:14.685796+00:00",
+  "extraction_end_time": "2026-06-20T08:40:30.701320+00:00",
+  "total_processing_duration_seconds": 16.02
+}

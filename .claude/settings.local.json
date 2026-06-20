@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(git -C C:/Users/A/Documents/raspi-cctv-project status)",
-      "Bash(git -C C:/Users/A/Documents/raspi-cctv-project log --oneline -n 10)"
+      "Bash(git -C C:/Users/A/Documents/raspi-cctv-project log --oneline -n 10)",
+      "PowerShell($py = 'C:\\\\Users\\\\A\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python314\\\\python.exe'; & $py -m pip install --disable-pip-version-check -q -r edge-device\\\\agent\\\\requirements.txt)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git ls-remote *)",
+      "Bash(git stash *)",
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)",
+      "Bash(git merge *)",
+      "Bash(git rm *)"
     ]
   }
 }

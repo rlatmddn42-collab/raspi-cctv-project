@@ -1,5 +1,13 @@
 # Handoff Document
 
+> **⚠️ STALE (2026-05-07).** This snapshot predates the `test modul/` prototype
+> pipeline (normal-background / persistent-change / candidate-dataset-builder)
+> and covers only the earlier UI/structural work. For the current, authoritative
+> project-progress summary, read the **root [`README.md`](README.md)** —
+> specifically its "현재 프로젝트 상태" (Current Project Status) and "다음 작업"
+> (Next Work) sections. This file has not been updated and is kept only for
+> historical context.
+
 > Generated 2026-05-07. Snapshot of the working tree at
 > `C:\Users\A\Documents\raspi-cctv-project` so that another assistant,
 > developer, or future session can continue without the prior conversation.

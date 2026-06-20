@@ -1,0 +1,48 @@
+{
+  "_comment": "Reference of available CLI options and their defaults. This file documents the parameters; pass them as command-line flags (the builder does not auto-read this file).",
+  "video": "../normal-background-prototype/input/E05_024.mp4",
+  "events": "../persistent-change-prototype/output/persistent_change_events.json",
+  "reference": "../normal-background-prototype/output/reference_background.jpg",
+  "output": "output",
+
+  "selection": {
+    "include_non_persistent": false,
+    "state_filter": "persistent,persistent_occluded,resumed,cooldown_wait",
+    "min_stationary_seconds": 0.0,
+    "candidate_ids": "",
+    "max_candidates": 0
+  },
+
+  "context_and_crop": {
+    "context_padding": 80,
+    "context_scale": 4.0,
+    "minimum_context_size": 160,
+    "crop_padding": 12,
+    "crop_upscale": 12
+  },
+
+  "times": {
+    "before_seconds": 2.0,
+    "clip_before_seconds": 3.0,
+    "clip_after_seconds": 5.0,
+    "clip_width": 0
+  },
+
+  "resolution_overrides": {
+    "event_width": null,
+    "event_height": null
+  },
+
+  "duplicates": {
+    "group_nearby_candidates": false,
+    "duplicate_center_distance": 20.0,
+    "duplicate_time_overlap_seconds": 5.0
+  },
+
+  "review_import": {
+    "review_results": "output/review_results.json",
+    "update_labels_only": false
+  },
+
+  "verbose": false
+}

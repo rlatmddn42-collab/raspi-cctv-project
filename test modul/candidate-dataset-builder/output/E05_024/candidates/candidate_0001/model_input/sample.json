@@ -1,0 +1,79 @@
+{
+  "candidate_id": 52,
+  "label_schema_version": "2.0",
+  "model_input_size": 128,
+  "context_model_input_size": 256,
+  "difference_mode": "abs_rgb",
+  "normalize_difference": false,
+  "interpolation_policy": "reference/current/context: INTER_AREA when shrinking, INTER_CUBIC when enlarging; difference: built from the aligned reference/current; mask: INTER_NEAREST only",
+  "model_source_crop": [
+    533,
+    382,
+    74,
+    74
+  ],
+  "model_clip": [
+    533,
+    382,
+    74,
+    74
+  ],
+  "model_pads": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "context_source_crop": [
+    496,
+    345,
+    148,
+    148
+  ],
+  "bbox_source_coordinates": [
+    566,
+    406,
+    8,
+    26
+  ],
+  "bbox_model_coordinates": [
+    57,
+    42,
+    14,
+    45
+  ],
+  "mask_source": "detector_mask_crop",
+  "mask_warnings": [],
+  "requested_mask_time_seconds": 59.06,
+  "actual_mask_time_seconds": 59.0,
+  "alignment_valid": true,
+  "alignment_warnings": [],
+  "generated_negative": false,
+  "camera_id": "E05",
+  "camera_id_source": "explicit",
+  "scene_id": "E05_view",
+  "capture_condition": "unknown",
+  "source_video_id": "E05_024.mp4",
+  "candidate_time_group": "E05_024.mp4_5",
+  "duplicate_group_id": null,
+  "group_key": "E05/E05_024.mp4",
+  "semantic_label": "unreviewed",
+  "raw_review_label": "unreviewed",
+  "normalized_semantic_label": "unreviewed",
+  "sample_quality": "unreviewed",
+  "reviewer_confidence": "unset",
+  "reviewer_notes": "",
+  "files": {
+    "reference": "reference.png",
+    "current": "current.png",
+    "difference": "difference.png",
+    "mask": "mask.png",
+    "context": "context.png",
+    "reference_context": "reference_context.png",
+    "current_context": "current_context.png",
+    "difference_context": "difference_context.png",
+    "paired_horizontal": "paired_horizontal.png",
+    "paired_grid": "paired_grid.png"
+  },
+  "array_path": "sample.npz"
+}
